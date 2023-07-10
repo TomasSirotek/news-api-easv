@@ -8,9 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-//SETUP REPOSITORIES
-
-// SERVICES
+// SETUP DI
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices();
 
