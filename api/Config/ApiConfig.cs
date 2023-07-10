@@ -19,7 +19,6 @@ public static class ApiConfig
                         .AllowAnyHeader());
         });
         
-        
         if (env.IsDevelopment())
         {
             services.AddNpgsqlDataSource(InfrastructureUtilityService.ProperlyFormattedConnectionString,

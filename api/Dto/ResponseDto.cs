@@ -4,9 +4,8 @@ public class ResponseDto
 {
     public ResponseDto(string message)
     {
-        Message = message;
+        MessageToClient = message;
     }
-
-    public string Message { get; set; }
+    public string MessageToClient { get; set; }
     public object? ResponseData { get; set; }
 }

@@ -1,6 +1,7 @@
 using api.Dto;
 using api.Helpers;
 using Infrastructure.DataModel;
+using Infrastructure.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 
@@ -22,8 +23,8 @@ public class FeedController : ControllerBase
     [Route("/api/feed")]
     public ResponseDto GetArticlesForFeed()
     {
-        IEnumerable<Article> articles =
-            _articleService.GetAllArticles();
+        IEnumerable<ArticleFeedModel> articles =
+            _articleService.GetAllArticlesForFeed();
         return _response.Success(HttpContext, 200, "Successfully fetched feed", articles);
     }
 }
