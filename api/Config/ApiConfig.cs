@@ -1,5 +1,6 @@
 using api.Middleware;
 using Infrastructure;
+using Npgsql;
 
 namespace api.Config;
 
@@ -29,10 +30,13 @@ public static class ApiConfig
         {
             services.AddNpgsqlDataSource(InfrastructureUtilityService.ProperlyFormattedConnectionString);
         }
+        
     }
 
     public static void UseApiConfiguration(this WebApplication app)
     {
+        InfrastructureUtilityService.TestDataSource(app.Services.GetService<NpgsqlDataSource>()!);
+        
         app.UseRouting();
 
         app.UseCors(options =>

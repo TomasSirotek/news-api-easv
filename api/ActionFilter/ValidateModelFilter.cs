@@ -1,4 +1,5 @@
 using api.Dto;
+using api.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -15,7 +16,7 @@ public class ValidateModelFilter : ActionFilterAttribute
             .Aggregate((i, j) => i + "," + j);
         context.Result = new JsonResult(new ResponseDto(errorMessages))
         {
-            StatusCode = 400
+            StatusCode = (int)StatusCodeType.BadRequest
         };
     }
 }

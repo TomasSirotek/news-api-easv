@@ -1,9 +1,8 @@
 namespace api.Helpers;
 
-public enum StatusCode
+public enum StatusCodeType
 {
     Success = 200,
-    NotFound = 404,
+    Created = 201,
     BadRequest = 400,
-    InternalServerError = 500
 }

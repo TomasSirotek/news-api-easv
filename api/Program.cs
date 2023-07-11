@@ -1,6 +1,4 @@
 using api.Config;
-using Infrastructure;
-using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +10,14 @@ builder.Logging.AddConsole();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices();
 
+// SETUP OTHER SERVICES
 builder.Services.AddApiConfiguration(builder.Environment);
 builder.Services.AddSwaggerConfiguration();
 
 var app = builder.Build();
 
+// USE OTHER SERVICES
 app.UseApiConfiguration();
 app.UseSwaggerConfiguration(app.Environment);
-
-InfrastructureUtilityService.TestDataSource(app.Services.GetService<NpgsqlDataSource>()!);
 
 app.Run();
