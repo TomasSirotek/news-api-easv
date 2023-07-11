@@ -15,53 +15,64 @@ public class ArticleRepository : IArticleRepository
         _dataSource = dataSource;
     }
 
-    public IEnumerable<ArticleQueryModel> SearchArticles(string searchDtoSearchTerm, int searchDtoPageSize)
+    public async Task<IEnumerable<ArticleQueryModel>> SearchArticles(string searchDtoSearchTerm, int searchDtoPageSize)
     {
-        using var connection = _dataSource.OpenConnection();
+        await using var connection = await _dataSource.OpenConnectionAsync();
 
-        var sql = @"SELECT article_id AS ArticleId, author, headline
-                FROM news.articles
-                WHERE headline ILIKE '%' || @searchDtoSearchTerm || '%'
-                LIMIT @searchDtoPageSize";
-        
-        return connection.Query<ArticleQueryModel>(sql, new {searchDtoSearchTerm, searchDtoPageSize});
+        const string sql = @"SELECT article_id AS ArticleId, author, headline
+                         FROM news.articles
+                         WHERE (author ILIKE '%' || @searchDtoSearchTerm || '%' OR
+                                headline ILIKE '%' || @searchDtoSearchTerm || '%')
+                         LIMIT @searchDtoPageSize";
+
+        return await connection.QueryAsync<ArticleQueryModel>(sql, new { searchDtoSearchTerm, searchDtoPageSize });
     }
 
-    public IEnumerable<ArticleFeedModel> GetAllArticlesForFeed()
+    public async Task<IEnumerable<ArticleFeedModel>> GetAllArticlesForFeed()
     {
-        using var connection = _dataSource.OpenConnection();
-        var sql = "SELECT article_id AS ArticleId,headline, article_img_url AS ArticleImgUrl, body FROM news.articles";
+        await using var connection = await _dataSource.OpenConnectionAsync();
+        const string sql =
+            "SELECT article_id AS ArticleId, headline, article_img_url AS ArticleImgUrl, SUBSTRING(body, 1, 51) AS body FROM news.articles";
+
+        return await connection.QueryAsync<ArticleFeedModel>(sql);
+    }
+
+    public async Task<Article> GetArticleById(int articleId)
+    {
+        await using var connection = await _dataSource.OpenConnectionAsync();
+        const string sql =
+            "SELECT article_id AS ArticleId,author, headline, article_img_url AS ArticleImgUrl, body FROM news.articles WHERE article_id = @articleId";
         
-        return connection.Query<ArticleFeedModel>(sql);
+        return await connection.QueryFirstAsync<Article>(sql, new { articleId });
     }
-    
-    public Article GetArticleById(int articleId)
-    {
-        using var connection = _dataSource.OpenConnection();
-        var sql = "SELECT article_id AS ArticleId,author, headline, article_img_url AS ArticleImgUrl, body FROM news.articles WHERE article_id = @articleId";
-        return connection.QueryFirst<Article>(sql, new {articleId});
-    }
-    
-    public Article CreateArticle(string headline, string author, string articleImgUrl,
+
+    public async Task<Article> CreateArticle(string headline, string author, string articleImgUrl,
         string articleBody)
     {
-        using var connection = _dataSource.OpenConnection();
-        var sql = "INSERT INTO news.articles (headline, author, article_img_url, body) VALUES (@headline, @author, @articleImgUrl, @articleBody) RETURNING article_id as ArticleId, headline, author, article_img_url as ArticleImgUrl, body";
-        return connection.QueryFirst<Article>(sql, new {headline, author, articleImgUrl, articleBody});
+        await using var connection = await _dataSource.OpenConnectionAsync();
+        const string sql =
+            "INSERT INTO news.articles (headline, author, article_img_url, body) VALUES (@headline, @author, @articleImgUrl, @articleBody) RETURNING article_id as ArticleId, headline, author, article_img_url as ArticleImgUrl, body";
+        
+        return await connection.QueryFirstAsync<Article>(sql, new { headline, author, articleImgUrl, articleBody });
     }
-    
-    public Article UpdateArticle(int articleDtoArticleId, string articleDtoHeadline, string articleDtoAuthor,
+
+    public async Task<Article> UpdateArticle(int articleDtoArticleId, string articleDtoHeadline,
+        string articleDtoAuthor,
         string articleDtoArticleImgUrl, string articleDtoBody)
     {
-        using var connection = _dataSource.OpenConnection();
-        var sql = "UPDATE news.articles SET headline = @articleDtoHeadline, author = @articleDtoAuthor, article_img_url = @articleDtoArticleImgUrl, body = @articleDtoBody WHERE article_id = @articleDtoArticleId RETURNING article_id as ArticleId, headline, author, article_img_url as ArticleImgUrl, body";
-        return connection.QueryFirst<Article>(sql, new {articleDtoArticleId, articleDtoHeadline, articleDtoAuthor, articleDtoArticleImgUrl, articleDtoBody});
+        await using var connection = await _dataSource.OpenConnectionAsync();
+        const string sql =
+            "UPDATE news.articles SET headline = @articleDtoHeadline, author = @articleDtoAuthor, article_img_url = @articleDtoArticleImgUrl, body = @articleDtoBody WHERE article_id = @articleDtoArticleId RETURNING article_id as ArticleId, headline, author, article_img_url as ArticleImgUrl, body";
+        
+        return await connection.QueryFirstAsync<Article>(sql,
+            new { articleDtoArticleId, articleDtoHeadline, articleDtoAuthor, articleDtoArticleImgUrl, articleDtoBody });
     }
-    
-    public bool DeleteArticleById(int articleId)
+
+    public async Task<bool> DeleteArticleById(int articleId)
     {
-        using var connection = _dataSource.OpenConnection();
-        var sql = "DELETE FROM news.articles WHERE article_id = @articleId";
-        return connection.Execute(sql, new {articleId}) > 0;
+        await using var connection = await _dataSource.OpenConnectionAsync();
+        const string sql = "DELETE FROM news.articles WHERE article_id = @articleId";
+        
+        return await connection.ExecuteAsync(sql, new { articleId }) > 0;
     }
 }

@@ -4,6 +4,7 @@ using Infrastructure.DataModel;
 using Infrastructure.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using Service;
+using Service.Service.Interface;
 
 namespace api.Controller;
 
@@ -17,14 +18,17 @@ public class FeedController : ControllerBase
         _articleService = articleService;
         _response = response;
     }
-    
-    // http://localhost:5000/api/feed
+
+    #region GET
+    // It should be possible to get a list of recent news stories on the landing page (a feed).
+    // These posts should only include some of the article text (body): a max of 51 characters is allowed here 
     [HttpGet]  
     [Route("/api/feed")]
-    public ResponseDto GetArticlesForFeed()
+    public async Task<ResponseDto> GetArticlesForFeed()
     {
-        IEnumerable<ArticleFeedModel> articles =
-            _articleService.GetAllArticlesForFeed();
-        return _response.Success(HttpContext, 200, "Successfully fetched feed", articles);
+        var articles =
+            await _articleService.GetAllArticlesForFeed();
+        return _response.CreateResponse(HttpContext, StatusCodeType.Success, "Successfully fetched feed", articles);
     }
+    #endregion
 }

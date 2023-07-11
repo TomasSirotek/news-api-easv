@@ -1,8 +1,9 @@
 using Infrastructure.DataModel;
 using Infrastructure.QueryModel;
 using Infrastructure.Repository.Interface;
+using Service.Service.Interface;
 
-namespace Service;
+namespace Service.Service;
 
 public class ArticleService : IArticleService
 {
@@ -13,33 +14,33 @@ public class ArticleService : IArticleService
         _articleRepository = articleRepository;
     }
 
-    public IEnumerable<ArticleQueryModel> SearchArticles(string searchDtoSearchTerm, int searchDtoPageSize)
+    public async Task<IEnumerable<ArticleQueryModel>> SearchArticles(string searchDtoSearchTerm, int searchDtoPageSize)
     {
-       return _articleRepository.SearchArticles(searchDtoSearchTerm, searchDtoPageSize);
+       return await _articleRepository.SearchArticles(searchDtoSearchTerm, searchDtoPageSize);
     }
 
-    public IEnumerable<ArticleFeedModel> GetAllArticlesForFeed()
+    public async Task<IEnumerable<ArticleFeedModel>> GetAllArticlesForFeed()
     {
-        return _articleRepository.GetAllArticlesForFeed();
+        return await _articleRepository.GetAllArticlesForFeed();
     }
     
-    public Article GetArticleById(int articleId)
+    public async Task<Article> GetArticleById(int articleId)
     {
-        return _articleRepository.GetArticleById(articleId);
+        return await _articleRepository.GetArticleById(articleId);
     }
-    public Article CreateArticle(string articleRequestHeadline, string articleRequestAuthor, string articleRequestArticleImgUrl,
+    public async Task<Article> CreateArticle(string articleRequestHeadline, string articleRequestAuthor, string articleRequestArticleImgUrl,
         string articleRequestBody)
     {
-       return _articleRepository.CreateArticle(articleRequestHeadline, articleRequestAuthor, articleRequestArticleImgUrl, articleRequestBody);
+       return await _articleRepository.CreateArticle(articleRequestHeadline, articleRequestAuthor, articleRequestArticleImgUrl, articleRequestBody);
     }
 
-    public Article UpdateArticle(int articleDtoArticleId, string articleDtoHeadline, string articleDtoAuthor,
+    public async Task<Article> UpdateArticle(int articleDtoArticleId, string articleDtoHeadline, string articleDtoAuthor,
         string articleDtoArticleImgUrl, string articleDtoBody)
     {
-        return _articleRepository.UpdateArticle(articleDtoArticleId, articleDtoHeadline, articleDtoAuthor, articleDtoArticleImgUrl, articleDtoBody);
+        return await _articleRepository.UpdateArticle(articleDtoArticleId, articleDtoHeadline, articleDtoAuthor, articleDtoArticleImgUrl, articleDtoBody);
     }
-    public bool DeleteArticleById(int articleId)
+    public async Task<bool> DeleteArticleById(int articleId)
     {
-        return _articleRepository.DeleteArticleById(articleId);
+        return await _articleRepository.DeleteArticleById(articleId);
     }
 }
