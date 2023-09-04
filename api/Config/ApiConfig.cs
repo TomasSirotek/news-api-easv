@@ -29,7 +29,7 @@ public static class ApiConfig
         if (env.IsProduction())
         {
             services.AddNpgsqlDataSource(InfrastructureUtilityService.ProperlyFormattedConnectionString);
-        }
+        }   
         
     }
 

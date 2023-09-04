@@ -25,7 +25,6 @@ public class PostArticleDto
     public string? ArticleImgUrl { get; set; }
 
     [NotNull]
-    [Required]
-    [RegularExpression("^(Bob|Rob|Dob|Lob)$")]
+    [Required, RegularExpression("^(Bob|Rob|Dob|Lob)$", ErrorMessage="Must be one of Bob, Rob, Dob, Lob")]
     public string? Author { get; set; }
 }

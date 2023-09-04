@@ -1,4 +1,6 @@
 using api.Config;
+using Infrastructure.Repository;
+using Infrastructure.Repository.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
